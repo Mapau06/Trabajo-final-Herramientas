@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+<style>
+  body {
+    background: url('https://zootecniasl.com/blog/wp-content/uploads/2024/04/administracion-clinica-veterinaria-1.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+  .login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  }
+</style>
+
+<div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="col-md-5 login-container">
+    <h3 class="text-center mb-4">Iniciar Sesión</h3>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label>Usuario</label>
+        <input type="text" class="form-control" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" name="password" required>
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+      <p class="text-center mt-3">
+        ¿No tienes una cuenta? 
+        <a href="{% url 'register' %}" class="text-primary">
+          <i class="fas fa-user-plus me-1"></i>Regístrate aquí
+        </a>
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}

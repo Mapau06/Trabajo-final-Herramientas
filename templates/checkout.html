@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary mb-4">Finalizar Compra</h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0">Datos de Envío y Contacto</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.name != 'card_number' and field.name != 'card_expiry' and field.name != 'card_cvv' %}
+                            <div class="mb-3" data-field-name="{{ field.name }}">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                                <div class="input-group">
+                                    {{ field }}
+                                </div>
+                                {% for error in field.errors %}
+                                    <small class="text-danger d-block mt-1">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+
+                <!-- Si el usuario escogió tarjeta, mostramos campos de tarjeta (JS) -->
+                <div id="card-fields" style="display:none;" class="border-top pt-3 mt-3">
+                    <h5 class="mb-3">Datos de la Tarjeta</h5>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Número de Tarjeta</label>
+                        <div class="input-group">
+                            {{ form.card_number }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Expiración (MM/AA)</label>
+                            <div class="input-group">
+                                {{ form.card_expiry }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">CVV</label>
+                            <div class="input-group">
+                                {{ form.card_cvv }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success btn-lg w-100 mt-4">
+                    <i class="fas fa-lock me-2"></i>Confirmar y Pagar
+                </button>
+            </form>
+        </div>
+    </div>
+        
+    <div class="col-md-4">
+        <div class="card shadow-sm position-sticky" style="top: 2rem;">
+            <div class="card-header bg-light">
+                <h4 class="mb-0">Resumen de la Orden</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush mb-3">
+                {% for item in items %}
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0 fw-bold">{{ item.nombre_producto }}</h6>
+                        <small class="text-muted">{{ item.cantidad }} x ${{ item.precio|floatformat:0 }}</small>
+                    </div>
+                    <span class="text-muted">${{ item.subtotal|floatformat:0 }}</span>
+                </li>
+                {% endfor %}
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <span class="fw-bold">Total a Pagar</span>
+                    <strong class="text-success h5 mb-0">${{ total|floatformat:0 }}</strong>
+                </li>
+            </ul>
+            <div class="card-footer bg-white border-top-0">
+                <small class="text-muted">
+                    <i class="fas fa-shield-alt me-2"></i>Pago seguro garantizado
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const radios = document.querySelectorAll('input[name="payment_method"]');
+    const cardFields = document.getElementById('card-fields');
+    function updateCardVisibility(){
+        const checked = document.querySelector('input[name="payment_method"]:checked');
+        if(checked && checked.value === 'card'){
+            cardFields.style.display = '';
+        } else {
+            cardFields.style.display = 'none';
+        }
+    }
+    radios.forEach(r => r.addEventListener('change', updateCardVisibility));
+    updateCardVisibility();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Historial de Compras{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary mb-4">Historial de Compras</h2>
+    
+    {% if ordenes %}
+    <div class="accordion" id="historialAccordion">
+        {% for orden in ordenes %}
+        <div class="accordion-item mb-3 shadow-sm">
+            <h2 class="accordion-header" id="heading{{ orden.id }}">
+                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ orden.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ orden.id }}">
+                    <strong>Orden #{{ orden.id }}</strong> - {{ orden.fecha_orden|date:"d M Y, H:i" }} - <span class="text-success ms-3">Total: ${{ orden.total_orden|floatformat:0 }}</span>
+                </button>
+            </h2>
+            <div id="collapse{{ orden.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ orden.id }}" data-bs-parent="#historialAccordion">
+                <div class="accordion-body">
+                    <h5>Detalles del Pedido</h5>
+                    <ul class="list-group mb-3">
+                        {% for detalle in orden.detalles.all %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            {{ detalle.cantidad }} x {{ detalle.nombre_producto }}
+                            <span>${{ detalle.subtotal|floatformat:0 }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <h5>Datos de Envío</h5>
+                    <p class="mb-1"><strong>Cliente:</strong> {{ orden.nombre_cliente }}</p>
+                    <p class="mb-1"><strong>Teléfono:</strong> {{ orden.telefono }}</p>
+                    <p class="mb-1"><strong>Dirección:</strong> {{ orden.direccion_envio }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        No has realizado ninguna compra aún. ¡Empieza a comprar <a href="{% url 'productos' %}" class="alert-link">aquí</a>!
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
