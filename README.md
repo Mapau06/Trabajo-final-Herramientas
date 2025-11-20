@@ -1,4 +1,4 @@
-# README – Proyecto VetCare
+README – Proyecto VetCare
 
 ## 🐾 Descripción del Proyecto
 
